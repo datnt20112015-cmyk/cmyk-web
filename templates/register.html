@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="gradient-bg">
+    <header class="topbar">
+        <div class="topbar-spacer"></div>
+        <nav class="nav-links">
+            <a href="{{ url_for('login') }}" class="nav-link active">Sign In</a>
+            <a href="{{ url_for('register') }}" class="nav-link">Register</a>
+        </nav>
+    </header>
+
+    <main class="auth-scene">
+        <div class="floating-shapes" aria-hidden="true">
+            <span class="shape shape-1"></span>
+            <span class="shape shape-2"></span>
+            <span class="shape shape-3"></span>
+            <span class="shape shape-4"></span>
+            <span class="shape shape-5"></span>
+            <span class="shape shape-6"></span>
+            <span class="shape shape-7"></span>
+            <span class="shape shape-8"></span>
+            <span class="shape shape-9"></span>
+            <span class="shape shape-10"></span>
+            <span class="shape shape-11"></span>
+            <span class="shape shape-12"></span>
+            <span class="shape shape-13"></span>
+            <span class="shape shape-14"></span>
+            <span class="shape shape-15"></span>
+            <span class="shape shape-16"></span>
+            <span class="shape shape-17"></span>
+            <span class="shape shape-18"></span>
+        </div>
+
+        <section class="form-card">
+            <h1>Register</h1>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('register') }}">
+                <label for="full_name">Name</label>
+                <input type="text" id="full_name" name="full_name" placeholder="Name" required>
+
+                <label for="username">Email</label>
+                <input type="text" id="username" name="username" placeholder="Email" required>
+
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Password" required>
+
+                <label for="confirm_password">Confirm</label>
+                <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm password" required>
+
+                <button type="submit">Register</button>
+            </form>
+        </section>
+    </main>
+</body>
+</html>

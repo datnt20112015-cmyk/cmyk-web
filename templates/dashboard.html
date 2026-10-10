@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang chủ</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav class="nav">
+        <div class="brand">Smart App</div>
+        <div class="nav-right">
+            <span>Xin chào, {{ user.full_name }}</span>
+            <a href="{{ url_for('logout') }}" class="logout-btn">Đăng xuất</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h2>Trang chủ người dùng</h2>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="cards">
+            <div class="card">
+                <h3>🎮 Game</h3>
+                <p>Vui chơi và thử thách trí tuệ</p>
+            </div>
+            <div class="card">
+                <h3>📚 Học Python</h3>
+                <p>Học kiến thức cơ bản qua bài giảng</p>
+            </div>
+            <div class="card">
+                <h3>🛒 Bán hàng</h3>
+                <p>Quản lý đơn hàng và doanh thu</p>
+            </div>
+            <div class="card">
+                <h3>📊 Thống kê</h3>
+                <p>Xem báo cáo và hiệu suất</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

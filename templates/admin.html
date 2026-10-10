@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="admin-page">
+    <div class="admin-layout">
+        <aside class="sidebar">
+            <div class="brand-block">
+                <span class="brand-icon">A</span>
+                <span>Admin</span>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a class="active" href="{{ url_for('admin') }}">Overview</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            </nav>
+        </aside>
+
+        <main class="admin-main">
+            <header class="admin-header">
+                <div>
+                    <p class="eyebrow">Management</p>
+                    <h1>Admin Dashboard</h1>
+                </div>
+                <div class="user-pill">
+                    <span>{{ user.full_name }}</span>
+                </div>
+            </header>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <section class="stats-grid">
+                <div class="stat-card accent-blue">
+                    <div class="label">Total users</div>
+                    <div class="value">{{ users|length }}</div>
+                </div>
+                <div class="stat-card accent-green">
+                    <div class="label">Status</div>
+                    <div class="value">Online</div>
+                </div>
+            </section>
+
+            <section class="table-card">
+                <div class="table-head">
+                    <h2>User list</h2>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Username</th>
+                            <th>Full name</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for u in users %}
+                            <tr>
+                                <td>{{ u.id }}</td>
+                                <td>{{ u.username }}</td>
+                                <td>{{ u.full_name }}</td>
+                                <td>
+                                    {% if u.username != 'admin' %}
+                                        <form method="POST" action="{{ url_for('delete_user', user_id=u.id) }}" onsubmit="return confirm('Delete this user?');">
+                                            <button type="submit" class="danger-btn">Delete</button>
+                                        </form>
+                                    {% else %}
+                                        <span class="admin-tag">Admin</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
