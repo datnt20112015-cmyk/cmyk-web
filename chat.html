@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trò chuyện | Smart App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="dashboard-body guest-mode {{ 'theme-dark' if settings.theme == 'dark' else '' }} {{ 'reduce-motion' if settings.reduce_motion else '' }}">
+    <nav class="nav">
+        <div class="brand">Smart App</div>
+        <div class="nav-right">
+            <span>{{ user.full_name if user else 'Chế độ khách' }}</span>
+            <a href="{{ url_for('dashboard') if user else url_for('index') }}" class="logout-btn">Quay lại</a>
+        </div>
+    </nav>
+
+    <main class="container chat-page" data-username="{{ user.username if user else '' }}" data-messages-url="{{ url_for('chat_messages') }}">
+        <h2>Phòng trò chuyện</h2>
+        <section class="chat-panel" aria-label="Phòng trò chuyện chung">
+            <div class="chat-panel-heading">
+                <div>
+                    <h3>Trò chuyện chung</h3>
+                    <p>Tin nhắn được cập nhật tự động.</p>
+                </div>
+                <span class="chat-online-label">Phòng công khai</span>
+            </div>
+
+            <div class="chat-messages" id="chat-messages" aria-live="polite" data-latest-id="{{ messages[-1].id if messages else 0 }}">
+                {% for message in messages %}
+                    <article class="chat-message {{ 'is-mine' if user and message.username == user.username else '' }}">
+                        <div class="chat-message-meta">
+                            <strong>{{ message.full_name }}</strong>
+                            <time>{{ message.created_at }}</time>
+                        </div>
+                        <p>{{ message.message }}</p>
+                    </article>
+                {% else %}
+                    <p class="chat-empty" id="chat-empty">Chưa có tin nhắn. Hãy bắt đầu cuộc trò chuyện!</p>
+                {% endfor %}
+            </div>
+
+            {% if user %}
+                <form class="chat-compose" id="chat-form">
+                    <label class="visually-hidden" for="chat-input">Tin nhắn</label>
+                    <input id="chat-input" name="message" type="text" maxlength="500" placeholder="Viết tin nhắn..." autocomplete="off" required>
+                    <button type="submit" id="chat-send">Gửi</button>
+                </form>
+            {% else %}
+                <div class="chat-guest-prompt">
+                    <span>Đăng nhập để tham gia trò chuyện.</span>
+                    <a href="{{ url_for('login') }}" class="logout-btn">Đăng nhập</a>
+                </div>
+            {% endif %}
+            <p class="chat-status" id="chat-status" role="status"></p>
+        </section>
+    </main>
+
+    <script>
+        const chatPage = document.querySelector('.chat-page');
+        const messagesElement = document.querySelector('#chat-messages');
+        const chatStatus = document.querySelector('#chat-status');
+        let latestMessageId = Number(messagesElement.dataset.latestId || 0);
+
+        function appendMessage(message) {
+            if (Number(message.id) <= latestMessageId) return;
+
+            document.querySelector('#chat-empty')?.remove();
+            const article = document.createElement('article');
+            article.className = 'chat-message';
+            if (message.username === chatPage.dataset.username) article.classList.add('is-mine');
+
+            const meta = document.createElement('div');
+            meta.className = 'chat-message-meta';
+            const sender = document.createElement('strong');
+            sender.textContent = message.full_name;
+            const time = document.createElement('time');
+            time.textContent = message.created_at;
+            meta.append(sender, time);
+
+            const body = document.createElement('p');
+            body.textContent = message.message;
+            article.append(meta, body);
+            messagesElement.append(article);
+            latestMessageId = Number(message.id);
+            messagesElement.dataset.latestId = String(latestMessageId);
+        }
+
+        async function refreshMessages() {
+            const wasNearBottom = messagesElement.scrollHeight - messagesElement.scrollTop - messagesElement.clientHeight < 80;
+            try {
+                const response = await fetch(`${chatPage.dataset.messagesUrl}?after=${latestMessageId}`);
+                if (!response.ok) return;
+                const data = await response.json();
+                data.messages.forEach(appendMessage);
+                if (wasNearBottom) messagesElement.scrollTop = messagesElement.scrollHeight;
+            } catch (error) {
+                chatStatus.textContent = 'Không thể tải tin nhắn mới. Đang thử kết nối lại...';
+            }
+        }
+
+        messagesElement.scrollTop = messagesElement.scrollHeight;
+        window.setInterval(refreshMessages, 2500);
+
+        document.querySelector('#chat-form')?.addEventListener('submit', async event => {
+            event.preventDefault();
+            const input = document.querySelector('#chat-input');
+            const sendButton = document.querySelector('#chat-send');
+            const message = input.value.trim();
+            if (!message) return;
+
+            sendButton.disabled = true;
+            chatStatus.textContent = '';
+            try {
+                const response = await fetch(chatPage.dataset.messagesUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message }),
+                });
+                const data = await response.json();
+                if (!response.ok) {
+                    chatStatus.textContent = data.error || 'Chưa gửi được tin nhắn.';
+                    return;
+                }
+                appendMessage(data.message);
+                input.value = '';
+                messagesElement.scrollTop = messagesElement.scrollHeight;
+            } catch (error) {
+                chatStatus.textContent = 'Không thể gửi tin nhắn. Hãy thử lại.';
+            } finally {
+                sendButton.disabled = false;
+                input.focus();
+            }
+        });
+    </script>
+</body>
+</html>

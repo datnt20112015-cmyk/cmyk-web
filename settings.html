@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cài đặt | Smart App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="dashboard-body guest-mode {{ 'theme-dark' if settings.theme == 'dark' else '' }} {{ 'reduce-motion' if settings.reduce_motion else '' }}">
+    <nav class="nav">
+        <div class="brand">Smart App</div>
+        <div class="nav-right">
+            <span>{{ user.full_name if user else 'Chế độ khách' }}</span>
+            <a href="{{ url_for('dashboard') if user else url_for('index') }}" class="logout-btn">Quay lại</a>
+        </div>
+    </nav>
+
+    <main class="container settings-container">
+        <h2>Cài đặt ứng dụng</h2>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="post" class="settings-form">
+            <section class="settings-row">
+                <div>
+                    <label for="theme">Giao diện</label>
+                    <p>Chọn giao diện phù hợp với bạn.</p>
+                </div>
+                <select id="theme" name="theme">
+                    <option value="light" {{ 'selected' if settings.theme == 'light' else '' }}>Sáng</option>
+                    <option value="dark" {{ 'selected' if settings.theme == 'dark' else '' }}>Tối</option>
+                </select>
+            </section>
+
+            <section class="settings-row">
+                <div>
+                    <label for="reduce_motion">Giảm chuyển động</label>
+                    <p>Tắt hiệu ứng chuyển động trên giao diện.</p>
+                </div>
+                <input id="reduce_motion" name="reduce_motion" type="checkbox" {{ 'checked' if settings.reduce_motion else '' }}>
+            </section>
+
+            <button class="settings-save" type="submit">Lưu cài đặt</button>
+        </form>
+    </main>
+</body>
+</html>

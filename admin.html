@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Overview</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="render-dashboard">
+    <div class="render-shell">
+        <aside class="render-sidebar">
+            <div class="workspace-header">
+                <div class="workspace-mark">M</div>
+                <span>My Workspace</span>
+                <span class="workspace-icon">⌃</span>
+            </div>
+
+            <nav class="sidebar-menu">
+                <a href="#" class="menu-item active">Projects</a>
+                <a href="#" class="menu-item">Blueprints</a>
+                <a href="#" class="menu-item">Environment Groups</a>
+            </nav>
+
+            <div class="sidebar-section-label">INTEGRATIONS</div>
+            <nav class="sidebar-menu sidebar-small">
+                <a href="#" class="menu-item">Observability</a>
+                <a href="#" class="menu-item">Webhooks</a>
+                <a href="#" class="menu-item">Notifications</a>
+            </nav>
+
+            <div class="sidebar-section-label">NETWORKING</div>
+
+            <div class="feature-card">
+                <div class="feature-header">
+                    <h3>Introducing Workflows</h3>
+                    <span class="close-btn">×</span>
+                </div>
+                <p>An orchestration and execution engine for long-running, distributed tasks.</p>
+                <a href="#" class="feature-link">Learn more →</a>
+            </div>
+
+            <div class="task-list">
+                <div class="task-item">
+                    <span class="task-check"></span>
+                    <span>Task A</span>
+                    <span class="task-bar"><em></em></span>
+                </div>
+                <div class="task-item">
+                    <span class="task-check"></span>
+                    <span>Task 1</span>
+                    <span class="task-bar"><em></em></span>
+                </div>
+                <div class="task-item">
+                    <span class="task-check"></span>
+                    <span>Task 2</span>
+                    <span class="task-bar"><em></em></span>
+                </div>
+            </div>
+
+            <div class="sidebar-footer-item">Changelog</div>
+            <div class="sidebar-footer-item">Status</div>
+            <div class="sidebar-footer-item">Collapse</div>
+        </aside>
+
+        <main class="render-main">
+            <header class="render-topbar">
+                <div class="topbar-left">
+                    <div class="service-title-group">
+                        <span class="service-name-inline">cmyk-web-1</span>
+                        <span class="service-separator">›</span>
+                        <button type="button" class="deploys-btn">Deploys</button>
+                    </div>
+                </div>
+                <div class="topbar-actions">
+                    <button type="button" class="search-btn">Search</button>
+                    <button type="button" class="kbd-btn">K</button>
+                    <button type="button" class="new-btn">+ New</button>
+                    <button type="button" class="upgrade-btn">Upgrade</button>
+                    <button type="button" class="help-btn">?</button>
+                    <div class="avatar-badge">D</div>
+                </div>
+            </header>
+
+            <section class="service-panel">
+                <div class="service-header-row">
+                    <div class="service-title-wrap">
+                        <span class="service-name-big">web-1</span>
+                        <span class="service-badge">Node</span>
+                        <span class="service-badge free-badge">Free</span>
+                        <a href="#" class="upgrade-link">Upgrade your instance →</a>
+                    </div>
+
+                    <div class="deploy-menu-wrap">
+                        <button type="button" class="menu-secondary">Connect</button>
+                        <div class="dropdown-wrap">
+                            <button type="button" class="menu-primary">Manual Deploy</button>
+                            <div class="dropdown-menu">
+                                <div class="dropdown-item">Deploy latest commit</div>
+                                <div class="dropdown-item muted">Deploy a specific commit</div>
+                                <div class="dropdown-item">Clear build cache &amp; deploy</div>
+                                <div class="dropdown-item">Restart service</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="service-meta-row">
+                    <div class="service-urls">
+                        <span class="url-item">rv-db5evhjnfac73a8b350</span>
+                        <span class="url-item">2015-cmyk / cmyk-web</span>
+                        <span class="url-item">web-1.onrender.com</span>
+                    </div>
+                    <div class="service-live-wrap">
+                        <span class="live-indicator">●</span>
+                        <span>Live</span>
+                    </div>
+                </div>
+
+                <div class="status-banner">
+                    The instance will spin down with inactivity, which can delay requests by 50 seconds or more.
+                </div>
+            </section>
+
+            <section class="deploys-box">
+                <div class="deploys-title">deploys and commits</div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
