@@ -6,11 +6,13 @@
     <title>Trang chủ</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body class="dashboard-body">
+<body class="dashboard-body {{ 'theme-dark' if settings.theme == 'dark' else '' }} {{ 'reduce-motion' if settings.reduce_motion else '' }}">
     <nav class="nav">
         <div class="brand">Smart App</div>
         <div class="nav-right">
             <span>Xin chào, {{ user.full_name }}</span>
+            <a href="{{ url_for('chat') }}" class="logout-btn">Trò chuyện</a>
+            <a href="{{ url_for('settings') }}" class="logout-btn">Cài đặt</a>
             <a href="{{ url_for('logout') }}" class="logout-btn">Đăng xuất</a>
         </div>
     </nav>
