@@ -58,7 +58,12 @@ def index():
         if current_user().get("role") == "admin":
             return redirect(url_for("admin"))
         return redirect(url_for("dashboard"))
-    return redirect(url_for("login"))
+    return render_template("guest.html")
+
+
+@app.route("/guest")
+def guest():
+    return render_template("guest.html")
 
 
 @app.route("/login", methods=["GET", "POST"])

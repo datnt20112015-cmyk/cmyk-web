@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chế độ khách</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="guest-page">
+    <header class="guest-topbar">
+        <div class="guest-logo">Smart App</div>
+        <div class="guest-actions">
+            <a href="{{ url_for('login') }}" class="guest-btn">Đăng nhập</a>
+            <a href="{{ url_for('register') }}" class="guest-btn-primary">Tạo tài khoản</a>
+        </div>
+    </header>
+
+    <main class="guest-hero">
+        <section class="guest-copy">
+            <span class="eyebrow">Chế độ khách</span>
+            <h1>Khám phá mọi tính năng ngay hôm nay</h1>
+            <p>
+                Smart App mang đến trải nghiệm nhanh, đẹp và dễ dùng để bạn xem demo,
+                thử chức năng và đăng nhập để sử dụng tài khoản cá nhân.
+            </p>
+
+            <div class="guest-actions-row">
+                <a href="{{ url_for('login') }}" class="guest-btn-primary">Bắt đầu</a>
+                <a href="{{ url_for('register') }}" class="guest-btn">Đăng ký</a>
+            </div>
+
+            <ul class="feature-list">
+                <li>Giao diện rõ ràng, dễ nhìn</li>
+                <li>Đăng nhập và đăng ký đơn giản</li>
+                <li>Hỗ trợ chế độ admin chuyên biệt</li>
+            </ul>
+        </section>
+
+        <aside class="guest-panel">
+            <div class="guest-panel-grid">
+                <div class="guest-stat">
+                    <strong>24/7</strong>
+                    <span>Truy cập mọi lúc</span>
+                </div>
+                <div class="guest-stat">
+                    <strong>3x</strong>
+                    <span>Tốc độ và trải nghiệm</span>
+                </div>
+                <div class="guest-stat">
+                    <strong>100%</strong>
+                    <span>Thân thiện với người dùng</span>
+                </div>
+            </div>
+        </aside>
+    </main>
+</body>
+</html>
