@@ -2,7 +2,7 @@ import hashlib
 import os
 import sqlite3
 
-from flask import Flask, flash, redirect, render_template, request, session, url_for
+from flask import Flask, flash, jsonify, redirect, render_template, request, session, url_for
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "app_data.db")
 ADMIN_ACCESS_CODE = "ADMIN2026"
@@ -34,6 +34,17 @@ def init_db():
         )
         """
     )
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS chat_messages (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL,
+            full_name TEXT NOT NULL,
+            message TEXT NOT NULL,
+            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+        )
+        """
+    )
     cursor.execute("SELECT COUNT(*) FROM users WHERE username = ?", ("admin",))
     if cursor.fetchone()[0] == 0:
         cursor.execute(
@@ -52,18 +63,38 @@ def current_user():
     return session.get("user")
 
 
+def app_settings():
+    return session.get("settings", {"theme": "light", "reduce_motion": False})
+
+
 @app.route("/")
 def index():
     if is_logged_in():
         if current_user().get("role") == "admin":
             return redirect(url_for("admin"))
         return redirect(url_for("dashboard"))
-    return render_template("guest.html")
+    return render_template("guest.html", settings=app_settings())
 
 
 @app.route("/guest")
 def guest():
-    return render_template("guest.html")
+    return render_template("guest.html", settings=app_settings())
+
+
+@app.route("/settings", methods=["GET", "POST"])
+def settings():
+    if request.method == "POST":
+        theme = request.form.get("theme", "light")
+        if theme not in {"light", "dark"}:
+            theme = "light"
+        session["settings"] = {
+            "theme": theme,
+            "reduce_motion": request.form.get("reduce_motion") == "on",
+        }
+        flash("Đã lưu cài đặt.", "success")
+        return redirect(url_for("settings"))
+
+    return render_template("settings.html", settings=app_settings(), user=current_user())
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -148,7 +179,63 @@ def register():
 def dashboard():
     if not is_logged_in():
         return redirect(url_for("login"))
-    return render_template("dashboard.html", user=current_user())
+    return render_template("dashboard.html", user=current_user(), settings=app_settings())
+
+
+@app.route("/chat")
+def chat():
+    conn = get_db()
+    rows = conn.execute(
+        "SELECT id, username, full_name, message, created_at "
+        "FROM chat_messages ORDER BY id DESC LIMIT 100"
+    ).fetchall()
+    conn.close()
+    messages = [dict(row) for row in reversed(rows)]
+    return render_template(
+        "chat.html", messages=messages, user=current_user(), settings=app_settings()
+    )
+
+
+@app.route("/api/chat/messages", methods=["GET", "POST"])
+def chat_messages():
+    if request.method == "GET":
+        after_id = max(request.args.get("after", 0, type=int), 0)
+        conn = get_db()
+        rows = conn.execute(
+            "SELECT id, username, full_name, message, created_at "
+            "FROM chat_messages WHERE id > ? ORDER BY id LIMIT 100",
+            (after_id,),
+        ).fetchall()
+        conn.close()
+        return jsonify(messages=[dict(row) for row in rows])
+
+    if not is_logged_in():
+        return jsonify(error="Bạn cần đăng nhập để gửi tin nhắn."), 401
+
+    payload = request.get_json(silent=True) or {}
+    message = payload.get("message", "")
+    if not isinstance(message, str):
+        message = ""
+    message = message.strip()
+    if not message:
+        return jsonify(error="Tin nhắn không được để trống."), 400
+    if len(message) > 500:
+        return jsonify(error="Tin nhắn tối đa 500 ký tự."), 400
+
+    user = current_user()
+    conn = get_db()
+    cursor = conn.execute(
+        "INSERT INTO chat_messages (username, full_name, message) VALUES (?, ?, ?)",
+        (user["username"], user.get("full_name", user["username"]), message),
+    )
+    row = conn.execute(
+        "SELECT id, username, full_name, message, created_at "
+        "FROM chat_messages WHERE id = ?",
+        (cursor.lastrowid,),
+    ).fetchone()
+    conn.commit()
+    conn.close()
+    return jsonify(message=dict(row)), 201
 
 
 @app.route("/admin")
